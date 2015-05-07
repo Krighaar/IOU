@@ -9,9 +9,9 @@ import com.google.android.gms.maps.model.LatLng;
 public class Register {
 
     private long id;
-    private String name;
+    private Integer user_id;
     private String description;
-    private int value;
+    private float value;
     private LatLng latLng;
 
     public long getId(){
@@ -22,12 +22,12 @@ public class Register {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Integer getuser_id() {
+        return user_id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUser_id(Integer user_id) {
+        this.user_id = user_id;
     }
 
     public String getDescription() {
@@ -38,11 +38,11 @@ public class Register {
         this.description = description;
     }
 
-    public int getValue() {
+    public float getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(float value) {
         this.value = value;
     }
 
@@ -57,6 +57,6 @@ public class Register {
     // Will be used by the ArrayAdapter in the ListView
     @Override
     public String toString() {
-        return name + description + value;
+        return user_id + description + value;
     }
 }

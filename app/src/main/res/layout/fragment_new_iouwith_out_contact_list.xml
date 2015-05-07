@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,38 +22,60 @@
             android:text="NEW ACTION"
             android:textSize="26sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            android:textSize="20sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/nameText"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name  "
+                android:textSize="20sp" />
 
-            android:hint="Input Name of debt/credit person" />
+            <EditText
+                android:id="@+id/nameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textSize="20sp" />
+                android:hint="Input Name of debt/credit person"
+                android:singleLine="true" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/description"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-            android:hint="Enter description" />
-        <EditText
-            android:id="@+id/amount"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Description  "
+        android:textSize="20sp" />
 
-            android:hint="Amount"
-            android:inputType="numberDecimal" />
+    <EditText
+        android:id="@+id/description"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+
+        android:autoText="false"
+        android:hint="Enter description"
+        android:singleLine="true" />
+
+</LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/amount"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+
+                android:hint="Amount"
+                android:inputType="numberDecimal" />
+
+        </LinearLayout>
+
+
 
         <LinearLayout
             android:layout_width="200sp"
@@ -70,7 +92,6 @@
                 android:layout_gravity="center"></fragment>
 
 
-
         </LinearLayout>
 
         <LinearLayout
@@ -84,62 +105,71 @@
                 android:layout_gravity="center"
                 android:text="Add Location to description"
                 android:textSize="18sp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="18sp"/>
-           <LinearLayout
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:orientation="horizontal">
-               <TextView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="Peter "
-                   android:textSize="18sp"/>
-               <TextView
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="Owes you: "
-                   android:textSize="18sp"/>
-               </LinearLayout>
+                android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Peter "
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Owes you: "
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="£££ money"
-                android:textSize="18sp"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="£££ money"
+                    android:textSize="18sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" from"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" Description"
-                    android:textSize="18sp"/>
+                    android:textSize="18sp" />
 
             </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textSize="18sp"/>
+                android:textSize="18sp" />
+
             <Button
+                android:id="@+id/addbtn"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="Add to IOU"
-                android:id="@+id/addbtn"/>
+                android:text="Add to IOU" />
         </LinearLayout>
 
 
     </LinearLayout>
 
 
-</RelativeLayout>
+</ScrollView>

@@ -3,6 +3,7 @@ package com.example.menola.iou;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,8 +19,12 @@ public class RegisterDataSource {
     // Database fields
     private SQLiteDatabase database;
     private RegisterContract dbHelper;
-    private String[] allColumns = { RegisterContract.COLUMN_ID,
-            RegisterContract.COLUMN_NAME };
+
+    private String[] allColumnsUsers = {RegisterContract.USER_ID, RegisterContract.USER_NAME};
+
+    private String[] allColumns = {RegisterContract.COLUMN_ID,
+            RegisterContract.COLUMN_USER_ID, RegisterContract.COLUMN_DESCRIPTION, RegisterContract.COLUMN_VALUE};
+
 
     public RegisterDataSource(Context context) {
         dbHelper = new RegisterContract(context);
@@ -33,13 +38,16 @@ public class RegisterDataSource {
         dbHelper.close();
     }
 
-    public Register createComment(String name, String description, int value, LatLng latlng) {
+
+    //add Latlng latlng as las paramater
+    public Register createComment(int user_id, String description, float value, LatLng latLng) {
         ContentValues values = new ContentValues();
-        values.put(RegisterContract.COLUMN_NAME, name);
+        this.open();
+        values.put(RegisterContract.COLUMN_USER_ID, user_id);
         values.put(RegisterContract.COLUMN_DESCRIPTION, description);
         values.put(RegisterContract.COLUMN_VALUE, value);
-        values.put(RegisterContract.COLUMN_LAT, latlng.latitude);
-        values.put(RegisterContract.COLUMN_LAT, latlng.longitude);
+        values.put(RegisterContract.COLUMN_LAT, latLng.latitude);
+        values.put(RegisterContract.COLUMN_LON, latLng.longitude);
 
         long insertId = database.insert(RegisterContract.TABLE_REGISTER, null,
                 values);
@@ -59,6 +67,30 @@ public class RegisterDataSource {
                 + " = " + id, null);
     }
 
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<User>();
+
+        Cursor cursor = database.query(RegisterContract.TABLE_USERS,
+                allColumnsUsers, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            // Register comment = cursorToComment(cursor);
+            do {
+
+                User user = new User();
+                user.setId(Integer.parseInt(cursor.getString(0)));
+                user.setName(cursor.getString(1));
+
+
+                users.add(user);
+            } while (cursor.moveToNext());
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return users;
+    }
+
     public List<Register> getAllComments() {
         List<Register> comments = new ArrayList<Register>();
 
@@ -67,9 +99,18 @@ public class RegisterDataSource {
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            Register comment = cursorToComment(cursor);
-            comments.add(comment);
-            cursor.moveToNext();
+            // Register comment = cursorToComment(cursor);
+            do {
+
+                Register comment = new Register();
+                comment.setId(Integer.parseInt(cursor.getString(0)));
+                comment.setUser_id(cursor.getInt(1));
+                comment.setDescription(cursor.getString(2));
+                comment.setValue(Float.parseFloat(cursor.getString(3)));
+
+
+                comments.add(comment);
+            } while (cursor.moveToNext());
         }
         // make sure to close the cursor
         cursor.close();
@@ -79,11 +120,81 @@ public class RegisterDataSource {
     private Register cursorToComment(Cursor cursor) {
         Register comment = new Register();
         comment.setId(cursor.getLong(0));
-        comment.setName(cursor.getString(1));
+        comment.setUser_id(cursor.getInt(1));
         return comment;
     }
 
 
+    @TargetApi(19)
+    public User findUser(String userName) {
+
+        User user = new User();
+        String[] selectionArgs = {userName};
+
+        Cursor resultSet = database.rawQuery("Select * from " + RegisterContract.TABLE_USERS + " where "+RegisterContract.USER_NAME+" = ?",selectionArgs, null);
+            resultSet.moveToFirst();
+
+            user.setId(resultSet.getInt(0));
+            user.setName(resultSet.getString(1));
+
+
+        return user;
+    }
+
+    public User createUser(String userName) {
+
+        ContentValues values = new ContentValues();
+        this.open();
+        values.put(RegisterContract.USER_NAME, userName);
+
+        long insertId = database.insert(RegisterContract.TABLE_USERS, null,
+                values);
+        Cursor cursor = database.query(RegisterContract.TABLE_USERS,
+                allColumnsUsers, RegisterContract.USER_ID + " = " + insertId, null,
+                null, null, null);
+        cursor.moveToFirst();
+        Register newRegister = cursorToComment(cursor);
+
+        return findUser(userName);
+    }
+
+    public float getTotalFromUser(int id) {
+
+        float total = 0;
+
+      /*  Cursor resultSet = database.rawQuery("Select "+RegisterContract.COLUMN_VALUE+" from " + RegisterContract.TABLE_REGISTER + " where " + RegisterContract.COLUMN_USER_ID + "" +
+                " = " + id, null);
+*/
+
+
+
+        String[] columns = {RegisterContract.COLUMN_VALUE};
+        String[] idStr ={""+id};
+        String whereClause = RegisterContract.COLUMN_USER_ID +" = ?";
+
+/*
+
+        Cursor resultSet = database.query(RegisterContract.TABLE_REGISTER, columns, whereClause, idStr,
+                null, null, null);
+*/
+        String queryString =" Select "+RegisterContract.COLUMN_VALUE+" from "+RegisterContract.TABLE_REGISTER
+                +" where "+RegisterContract.COLUMN_USER_ID+"=?";
+
+
+// another test
+      Cursor resultSet =  database.rawQuery(queryString, idStr);
+
+        resultSet.moveToFirst();
+        while (!resultSet.isAfterLast()) {
+            do{
+                total += resultSet.getFloat(0);
+            }while (resultSet.moveToLast());
+
+        }
+
+
+        return total;
+    }
 }
 
 

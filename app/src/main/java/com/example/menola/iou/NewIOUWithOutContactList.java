@@ -25,7 +25,10 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
@@ -35,6 +38,9 @@ public class NewIOUWithOutContactList extends SuperFragment implements View.OnCl
 
     private GoogleMap map;
     private EditText name, description, value;
+    private RegisterDataSource dataSource;
+    private LatLng pos;
+    private Marker marker;
 
 
     public static NewIOUWithOutContactList newInstance() {
@@ -52,7 +58,14 @@ public class NewIOUWithOutContactList extends SuperFragment implements View.OnCl
         View rootView = inflater.inflate(R.layout.fragment_new_iouwith_out_contact_list, container, false);
         init(rootView);
 
-        map = ((com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.mapV)).getMap();
+        dataSource = new RegisterDataSource(getActivity());
+
+        // When extended supportMapFragment the following line wont work!
+      map = ((com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.mapV)).getMap();
+/*
+        UiSettings settings = SupportMapFragment.getMap().getUiSettings();
+        settings.setAllGesturesEnabled(false);
+        settings.setMyLocationButtonEnabled(false);*/
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -62,12 +75,14 @@ public class NewIOUWithOutContactList extends SuperFragment implements View.OnCl
 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
 
-        LatLng pos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+        pos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(pos, 16);
-        map.addMarker(new MarkerOptions().position(pos).title("You were here"));
+
+        marker = map.addMarker(new MarkerOptions().position(pos).title("You were here"));
         map.animateCamera(update);
+
 
 
         int[] clickButtons = new int[]{R.id.addbtn
@@ -86,18 +101,27 @@ public class NewIOUWithOutContactList extends SuperFragment implements View.OnCl
         switch (v.getId()) {
             case R.id.addbtn:
                 //String namestr = name.getText().toString();
-                Toast.makeText(getActivity(), "Name: " + name.getText().toString(), Toast.LENGTH_SHORT).show();
+
+                Toast.makeText(getActivity(), "Name: " + name.getText().toString() + " desc: "+ description.getText().toString() + " and value: "+value.getText().toString() +" pos: "+pos.toString()   , Toast.LENGTH_SHORT).show();
+
+             User user = dataSource.createUser(name.getText().toString());
+
+                dataSource.createComment(user.getId(),description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
+
+                marker.remove();
                 break;
         }
     }
 
 
-    @Override
+    //@Override
     protected boolean canGoBack() {
         return true;
     }
 
     private void init(View rootView) {
         name = (EditText) rootView.findViewById(R.id.nameText);
+        description = (EditText) rootView.findViewById(R.id.description);
+        value = (EditText) rootView.findViewById(R.id.amount);
     }
 }
