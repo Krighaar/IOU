@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -131,11 +132,15 @@ public class RegisterDataSource {
         User user = new User();
         String[] selectionArgs = {userName};
 
-        Cursor resultSet = database.rawQuery("Select * from " + RegisterContract.TABLE_USERS + " where "+RegisterContract.USER_NAME+" = ?",selectionArgs, null);
-            resultSet.moveToFirst();
-
+        Cursor resultSet = database.rawQuery("Select * from " + RegisterContract.TABLE_USERS + " where " + RegisterContract.USER_NAME + " = ?", selectionArgs, null);
+        if (resultSet.moveToFirst()) {
             user.setId(resultSet.getInt(0));
             user.setName(resultSet.getString(1));
+
+        }
+        else {
+            user = null;
+        }
 
 
         return user;
@@ -167,33 +172,86 @@ public class RegisterDataSource {
 */
 
 
-
         String[] columns = {RegisterContract.COLUMN_VALUE};
-        String[] idStr ={""+id};
-        String whereClause = RegisterContract.COLUMN_USER_ID +" = ?";
+        String[] idStr = {"" + id};
+        String whereClause = RegisterContract.COLUMN_USER_ID + " = ?";
 
 /*
 
         Cursor resultSet = database.query(RegisterContract.TABLE_REGISTER, columns, whereClause, idStr,
                 null, null, null);
 */
-        String queryString =" Select "+RegisterContract.COLUMN_VALUE+" from "+RegisterContract.TABLE_REGISTER
-                +" where "+RegisterContract.COLUMN_USER_ID+"=?";
+        String queryString = " Select " + RegisterContract.COLUMN_VALUE + " from " + RegisterContract.TABLE_REGISTER
+                + " where " + RegisterContract.COLUMN_USER_ID + "=?";
 
 
 // another test
-      Cursor resultSet =  database.rawQuery(queryString, idStr);
+        Cursor resultSet = database.rawQuery(queryString, idStr);
 
         resultSet.moveToFirst();
         while (!resultSet.isAfterLast()) {
-            do{
+            do {
                 total += resultSet.getFloat(0);
-            }while (resultSet.moveToLast());
+            } while (resultSet.moveToLast());
 
         }
 
 
         return total;
+    }
+
+    public List<Register> getAllRegFromUser(int userID) {
+        List<Register> comments = new ArrayList<Register>();
+
+        String[] selection = {"" + userID};
+
+        Cursor cursor = database.query(RegisterContract.TABLE_REGISTER,
+                allColumns, "userID =?", selection, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            // Register comment = cursorToComment(cursor);
+            do {
+
+                Register comment = new Register();
+                comment.setId(Integer.parseInt(cursor.getString(0)));
+                comment.setUser_id(cursor.getInt(1));
+                comment.setDescription(cursor.getString(2));
+                comment.setValue(Float.parseFloat(cursor.getString(3)));
+
+
+                comments.add(comment);
+            } while (cursor.moveToNext());
+        }
+        // make sure to close the cursor
+        cursor.close();
+        return comments;
+    }
+
+    public User getUser(int userID) {
+
+        User user = new User();
+
+        String[] selection = {"" + userID};
+
+        Cursor cursor = database.query(RegisterContract.TABLE_USERS,
+                allColumnsUsers, RegisterContract.COLUMN_ID + " =?", selection, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            user.setId(Integer.parseInt(cursor.getString(0)));
+            user.setName(cursor.getString(1));
+        } else {
+            user.setId(100);
+            user.setName("NO USER FOUND!");
+        }
+
+        database.close();
+        Log.d("FootballApp", user.getName() + "=" + String.valueOf(userID));
+
+
+        // make sure to close the cursor
+        cursor.close();
+        return user;
     }
 }
 

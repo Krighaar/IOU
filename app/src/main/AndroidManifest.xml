@@ -2,14 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.menola.iou" >
 
-    <uses-permission android:name="com.example.menola.iou.permission.MAPS_RECEIVE"></uses-permission>
-
+    <uses-permission android:name="com.example.menola.iou.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
@@ -26,13 +24,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
 
         <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBH8OFDGga_MACWp_wJEjcCG7dsDi1a8xk"/>
+            android:value="AIzaSyBH8OFDGga_MACWp_wJEjcCG7dsDi1a8xk" />
+
+        <activity
+            android:name=".newIOU"
+            android:label="@string/title_activity_new_iou" >
+        </activity>
+        <activity
+            android:name=".SeeUser"
+            android:label="@string/title_activity_see_user" >
+        </activity>
     </application>
 
 </manifest>

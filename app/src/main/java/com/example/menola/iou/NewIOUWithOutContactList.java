@@ -75,7 +75,10 @@ public class NewIOUWithOutContactList extends SuperFragment implements View.OnCl
 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
 
-        pos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+      //  pos = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+        pos = new LatLng(37.4028036, -122.0410981);
+
 
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(pos, 16);
