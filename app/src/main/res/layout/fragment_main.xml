@@ -1,3 +1,4 @@
+<!--suppress AndroidDomInspection -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
 
@@ -33,19 +34,27 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ACTIONS" />
+            android:text="NEW   I O U"
+            android:textSize="25sp"/>
 
         <Button
             android:id="@+id/newAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add debt/credit" />
+            android:background="@drawable/customnewaction"
+            />
 
         <Button
             android:id="@+id/newAccountNoContactList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add debt/credit - no contact" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LIST OF CURRENT MONEY IN/OUT"
+            android:layout_gravity="center_horizontal"
+            android:textSize="20sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -62,7 +71,30 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+           >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+               >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TOTAL:"
+                    android:textSize="20sp"
+                    android:layout_gravity="center_horizontal"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="total goes here..."
+                    android:textSize="20sp"
+                    android:layout_gravity="center_horizontal"/>
+                </LinearLayout>
+
 
             <ListView
                 android:id="@+id/listtwo"
