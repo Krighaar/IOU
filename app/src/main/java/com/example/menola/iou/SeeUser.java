@@ -1,16 +1,23 @@
 package com.example.menola.iou;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.menola.iou.model.Register;
+import com.example.menola.iou.model.User;
 
 import java.util.List;
 
@@ -22,6 +29,8 @@ public class SeeUser extends ActionBarActivity {
     private TextView userIDTextView, userNameTV;
     private ListView listView;
     private User user;
+    private ArrayAdapter<Register> regAdapter;
+    private  List<Register> reg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +47,59 @@ public class SeeUser extends ActionBarActivity {
 
 
         //Getting the connection to DB
-        datasource = new RegisterDataSource(this);
+        datasource = RegisterDataSource.getInstance(this);
         datasource.open();
 
 
         //Getting info from DB
-        List<Register> reg = datasource.getAllRegFromUser(userID);
+        reg = datasource.getAllRegFromUser(userID);
         user =  datasource.getUser(userID);
 
 
-        ArrayAdapter<Register> regAdapter = new ArrayAdapter<Register>(this, android.R.layout.simple_list_item_1,reg);
+
+       regAdapter = new ArrayAdapter<Register>(this, android.R.layout.simple_list_item_1, reg) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView text = (TextView) view.findViewById(android.R.id.text1);
+
+                // text.setText(values.get(position).getName() + " id: " + values.get(position).getId() + " amount: " + getTotal(values.get(position).getId()));
+                text.setText(reg.get(position).getDescription() + " Value: " + reg.get(position).getValue());
+
+                //   text.setText(values.get(position).getName() + " id: " + values.get(position).getId() + " amount: ");
+                if ((position % 2) == 0) {
+                    text.setTextColor(Color.BLACK);
+                    text.setBackgroundColor(Color.LTGRAY);
+                } else {
+                    text.setTextColor(Color.BLACK);
+                }
+                // text.setTextColor(Color.GREEN); //<- choose you color
+                text.setTypeface(Typeface.MONOSPACE);
+
+                return view;
+            }
+        };
 
 
         //Setting text in UI
         listView.setAdapter(regAdapter);
         userNameTV.setText(user.getName());
         userIDTextView.setText(String.valueOf(userID));
+
+        //Setting up the listview on click
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                long id = regAdapter.getItem(i).getId();
+                Toast.makeText(getApplicationContext(), "id cliked is: " + id, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getApplicationContext(), Details.class);
+                intent.putExtra("regID", id);
+                startActivity(intent);
+            }
+        });
+
 
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

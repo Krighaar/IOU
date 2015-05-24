@@ -1,4 +1,4 @@
-package com.example.menola.iou;
+package com.example.menola.iou.model;
 
 import com.google.android.gms.maps.model.LatLng;
 

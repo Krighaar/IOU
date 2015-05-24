@@ -1,25 +1,22 @@
 package com.example.menola.iou;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.menola.iou.model.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -88,7 +85,7 @@ public class newIOU extends ActionBarActivity implements View.OnClickListener {
         value = (EditText) findViewById(R.id.amount);
 
 
-        dataSource = new RegisterDataSource(this);
+        dataSource = RegisterDataSource.getInstance(this);
         dataSource.open();
 
         final List<User> USERS = dataSource.getAllUsers();
@@ -130,7 +127,7 @@ public class newIOU extends ActionBarActivity implements View.OnClickListener {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String id = adapter.getItem(i);
-                dataSource = new RegisterDataSource(getApplicationContext());
+                dataSource = RegisterDataSource.getInstance(getApplicationContext());
                 dataSource.open();
                 User user = dataSource.findUser(id);
                 dataSource.close();
@@ -150,7 +147,7 @@ public class newIOU extends ActionBarActivity implements View.OnClickListener {
         switch (view.getId()) {
 
             case R.id.addbtn:
-                dataSource = new RegisterDataSource(this);
+                dataSource = RegisterDataSource.getInstance(this);
                 dataSource.open();
                 locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -175,6 +172,10 @@ public class newIOU extends ActionBarActivity implements View.OnClickListener {
                     dataSource.createComment(dataSource.findUser(name.getText().toString()).getId(), description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
 
                 }
+
+                Vibrator v = (Vibrator) this.getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+                // Vibrate for 500 milliseconds
+                v.vibrate(500);
 
                 dataSource.close();
                 break;

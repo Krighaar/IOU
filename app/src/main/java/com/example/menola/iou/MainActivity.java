@@ -1,7 +1,10 @@
 package com.example.menola.iou;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,9 +14,9 @@ import android.view.View;
 import java.util.Stack;
 
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
-    private Stack<SuperFragment> stack;
+    private Stack<Fragment> stack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +24,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
 
 
-        stack = new Stack<SuperFragment>();
+        stack = new Stack<Fragment>();
         if (savedInstanceState == null) {
-            this.pushFragment(MainFragment.newInstance(),false);
+            this.pushFragment(MainFragment.newInstance(), false);
         }
     }
 
@@ -43,20 +46,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
-    public void pushFragment(SuperFragment fragment, boolean asRoot) {
+    public void pushFragment(Fragment fragment, boolean asRoot) {
         stack.push(fragment);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_wrapper, fragment);
         ft.commit();
         if (asRoot) {
-            SuperFragment sf = stack.peek();
+            Fragment f = stack.peek();
             stack.clear();
-            stack.push(sf);
+            stack.push(f);
         }
     }
+
     public void popToRoot() {
-        SuperFragment initialFragment = MainFragment.newInstance();
-        SuperFragment currentFragment = stack.peek();
+        Fragment initialFragment = MainFragment.newInstance();
+        Fragment currentFragment = stack.peek();
         stack.clear();
         stack.push(initialFragment);
         stack.push(currentFragment);
@@ -66,7 +70,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void popFragment() {
         if (stack.size() > 1) {
             stack.pop();
-            SuperFragment fragment = stack.peek();
+            Fragment fragment = stack.peek();
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.replace(R.id.fragment_wrapper, fragment);
             ft.commit();
@@ -82,21 +86,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onBackPressed() {
-        back();
-    }
-
-    private void back() {
-        if (stack.size() > 0) {
-            SuperFragment sf = stack.peek();
-            if (sf.canGoBack()) {
-                if (stack.size() > 1) {
-                    popFragment();
-                } else {
-                    super.onBackPressed();
-                }
-            }
-        } else { //Finish app
-            super.onBackPressed();
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            this.finish();
+        } else {
+            getFragmentManager().popBackStack();
         }
     }
 

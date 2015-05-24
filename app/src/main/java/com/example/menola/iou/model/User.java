@@ -1,4 +1,4 @@
-package com.example.menola.iou;
+package com.example.menola.iou.model;
 
 /**
  * Created by peter on 07-05-15.

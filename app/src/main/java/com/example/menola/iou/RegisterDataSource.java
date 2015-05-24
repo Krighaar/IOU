@@ -11,6 +11,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.menola.iou.model.Register;
+import com.example.menola.iou.model.User;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -19,16 +21,26 @@ import com.google.android.gms.maps.model.LatLng;
 public class RegisterDataSource {
     // Database fields
     private SQLiteDatabase database;
-    private RegisterContract dbHelper;
+    private TransactionContract dbHelper;
 
-    private String[] allColumnsUsers = {RegisterContract.USER_ID, RegisterContract.USER_NAME};
+    private static RegisterDataSource datasource;
 
-    private String[] allColumns = {RegisterContract.COLUMN_ID,
-            RegisterContract.COLUMN_USER_ID, RegisterContract.COLUMN_DESCRIPTION, RegisterContract.COLUMN_VALUE};
+    private String[] allColumnsUsers = {TransactionContract.USER_ID, TransactionContract.USER_NAME};
+
+    private String[] allColumns = {TransactionContract.COLUMN_ID,
+            TransactionContract.COLUMN_USER_ID, TransactionContract.COLUMN_DESCRIPTION, TransactionContract.COLUMN_VALUE};
+    private int totalFromAll;
 
 
-    public RegisterDataSource(Context context) {
-        dbHelper = new RegisterContract(context);
+    private RegisterDataSource(Context context) {
+        dbHelper = new TransactionContract(context);
+    }
+
+    public static RegisterDataSource getInstance(Context context) {
+        if (datasource == null) {
+            datasource = new RegisterDataSource(context);
+        }
+        return datasource;
     }
 
     public void open() throws SQLException {
@@ -44,16 +56,16 @@ public class RegisterDataSource {
     public Register createComment(int user_id, String description, float value, LatLng latLng) {
         ContentValues values = new ContentValues();
         this.open();
-        values.put(RegisterContract.COLUMN_USER_ID, user_id);
-        values.put(RegisterContract.COLUMN_DESCRIPTION, description);
-        values.put(RegisterContract.COLUMN_VALUE, value);
-        values.put(RegisterContract.COLUMN_LAT, latLng.latitude);
-        values.put(RegisterContract.COLUMN_LON, latLng.longitude);
+        values.put(TransactionContract.COLUMN_USER_ID, user_id);
+        values.put(TransactionContract.COLUMN_DESCRIPTION, description);
+        values.put(TransactionContract.COLUMN_VALUE, value);
+        values.put(TransactionContract.COLUMN_LAT, latLng.latitude);
+        values.put(TransactionContract.COLUMN_LON, latLng.longitude);
 
-        long insertId = database.insert(RegisterContract.TABLE_REGISTER, null,
+        long insertId = database.insert(TransactionContract.TABLE_REGISTER, null,
                 values);
-        Cursor cursor = database.query(RegisterContract.TABLE_REGISTER,
-                allColumns, RegisterContract.COLUMN_ID + " = " + insertId, null,
+        Cursor cursor = database.query(TransactionContract.TABLE_REGISTER,
+                allColumns, TransactionContract.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
         Register newRegister = cursorToComment(cursor);
@@ -64,14 +76,14 @@ public class RegisterDataSource {
     public void deleteComment(Register comment) {
         long id = comment.getId();
         System.out.println("Comment deleted with id: " + id);
-        database.delete(RegisterContract.TABLE_REGISTER, RegisterContract.COLUMN_ID
+        database.delete(TransactionContract.TABLE_REGISTER, TransactionContract.COLUMN_ID
                 + " = " + id, null);
     }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<User>();
 
-        Cursor cursor = database.query(RegisterContract.TABLE_USERS,
+        Cursor cursor = database.query(TransactionContract.TABLE_USERS,
                 allColumnsUsers, null, null, null, null, null);
 
         cursor.moveToFirst();
@@ -95,7 +107,7 @@ public class RegisterDataSource {
     public List<Register> getAllComments() {
         List<Register> comments = new ArrayList<Register>();
 
-        Cursor cursor = database.query(RegisterContract.TABLE_REGISTER,
+        Cursor cursor = database.query(TransactionContract.TABLE_REGISTER,
                 allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
@@ -132,7 +144,7 @@ public class RegisterDataSource {
         User user = new User();
         String[] selectionArgs = {userName};
 
-        Cursor resultSet = database.rawQuery("Select * from " + RegisterContract.TABLE_USERS + " where " + RegisterContract.USER_NAME + " = ?", selectionArgs, null);
+        Cursor resultSet = database.rawQuery("Select * from " + TransactionContract.TABLE_USERS + " where " + TransactionContract.USER_NAME + " = ?", selectionArgs, null);
         if (resultSet.moveToFirst()) {
             user.setId(resultSet.getInt(0));
             user.setName(resultSet.getString(1));
@@ -150,15 +162,15 @@ public class RegisterDataSource {
 
         ContentValues values = new ContentValues();
         this.open();
-        values.put(RegisterContract.USER_NAME, userName);
+        values.put(TransactionContract.USER_NAME, userName);
 
-        long insertId = database.insert(RegisterContract.TABLE_USERS, null,
+        long insertId = database.insert(TransactionContract.TABLE_USERS, null,
                 values);
-        Cursor cursor = database.query(RegisterContract.TABLE_USERS,
-                allColumnsUsers, RegisterContract.USER_ID + " = " + insertId, null,
+        Cursor cursor = database.query(TransactionContract.TABLE_USERS,
+                allColumnsUsers, TransactionContract.USER_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
-        Register newRegister = cursorToComment(cursor);
+       // Register newRegister = cursorToComment(cursor); //Can be deleted??
 
         return findUser(userName);
     }
@@ -167,33 +179,19 @@ public class RegisterDataSource {
 
         float total = 0;
 
-      /*  Cursor resultSet = database.rawQuery("Select "+RegisterContract.COLUMN_VALUE+" from " + RegisterContract.TABLE_REGISTER + " where " + RegisterContract.COLUMN_USER_ID + "" +
-                " = " + id, null);
-*/
-
-
-        String[] columns = {RegisterContract.COLUMN_VALUE};
+        String[] columns = {TransactionContract.COLUMN_VALUE};
         String[] idStr = {"" + id};
-        String whereClause = RegisterContract.COLUMN_USER_ID + " = ?";
+        String whereClause = TransactionContract.COLUMN_USER_ID + " = ?";
+        String queryString = " Select SUM(" + TransactionContract.COLUMN_VALUE + ") from " + TransactionContract.TABLE_REGISTER
+                + " WHERE " + TransactionContract.COLUMN_USER_ID + "=?";
 
-/*
-
-        Cursor resultSet = database.query(RegisterContract.TABLE_REGISTER, columns, whereClause, idStr,
-                null, null, null);
-*/
-        String queryString = " Select " + RegisterContract.COLUMN_VALUE + " from " + RegisterContract.TABLE_REGISTER
-                + " where " + RegisterContract.COLUMN_USER_ID + "=?";
-
-
-// another test
+        // another test
         Cursor resultSet = database.rawQuery(queryString, idStr);
 
         resultSet.moveToFirst();
-        while (!resultSet.isAfterLast()) {
-            do {
-                total += resultSet.getFloat(0);
-            } while (resultSet.moveToLast());
 
+        if(resultSet.moveToFirst()){
+            total = resultSet.getFloat(0);
         }
 
 
@@ -205,7 +203,7 @@ public class RegisterDataSource {
 
         String[] selection = {"" + userID};
 
-        Cursor cursor = database.query(RegisterContract.TABLE_REGISTER,
+        Cursor cursor = database.query(TransactionContract.TABLE_REGISTER,
                 allColumns, "userID =?", selection, null, null, null);
 
         cursor.moveToFirst();
@@ -234,8 +232,8 @@ public class RegisterDataSource {
 
         String[] selection = {"" + userID};
 
-        Cursor cursor = database.query(RegisterContract.TABLE_USERS,
-                allColumnsUsers, RegisterContract.COLUMN_ID + " =?", selection, null, null, null);
+        Cursor cursor = database.query(TransactionContract.TABLE_USERS,
+                allColumnsUsers, TransactionContract.COLUMN_ID + " =?", selection, null, null, null);
 
         if (cursor.moveToFirst()) {
             user.setId(Integer.parseInt(cursor.getString(0)));
@@ -252,6 +250,51 @@ public class RegisterDataSource {
         // make sure to close the cursor
         cursor.close();
         return user;
+    }
+
+    public String getTotalFromAll() {
+
+        float total = 0;
+
+        String[] columns = {TransactionContract.COLUMN_VALUE};
+        String whereClause = TransactionContract.COLUMN_USER_ID + " = ?";
+
+        String queryString = " Select SUM(" + TransactionContract.COLUMN_VALUE + ") from " + TransactionContract.TABLE_REGISTER;
+
+
+        Cursor resultSet = database.rawQuery(queryString, null);
+
+
+        if(resultSet.moveToFirst()){
+            total = resultSet.getFloat(0);
+        }
+
+
+        return String.valueOf(total);
+    }
+
+    public Register getTransaction(Long regID) {
+
+        Register register = new Register();
+
+
+        String[] selectionArgs = {""+regID};
+
+        Cursor resultSet = database.rawQuery("Select * from " + TransactionContract.TABLE_REGISTER + " where " + TransactionContract.COLUMN_ID + " = ?", selectionArgs, null);
+        if (resultSet.moveToFirst()) {
+            register.setId(resultSet.getLong(0));
+            register.setUser_id(resultSet.getInt(1));
+            register.setDescription(resultSet.getString(2));
+            register.setValue(resultSet.getFloat(3));
+            register.setLatLng(new LatLng(resultSet.getDouble(4),resultSet.getDouble(5)));
+
+        }
+        else {
+            register = null;
+        }
+
+
+        return register;
     }
 }
 

@@ -63,7 +63,7 @@
             <ListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="125sp">
 
             </ListView>
 
@@ -88,6 +88,7 @@
                     android:textSize="20sp"
                     android:layout_gravity="center_horizontal"/>
                 <TextView
+                    android:id="@+id/totalOwe"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="total goes here..."
@@ -96,12 +97,7 @@
                 </LinearLayout>
 
 
-            <ListView
-                android:id="@+id/listtwo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-            </ListView>
 
         </LinearLayout>
 

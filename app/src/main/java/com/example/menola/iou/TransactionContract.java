@@ -3,13 +3,12 @@ package com.example.menola.iou;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.BaseColumns;
 import android.util.Log;
 
 /**
  * Created by Peter on 28-04-2015.
  */
-public class RegisterContract extends SQLiteOpenHelper {
+public class TransactionContract extends SQLiteOpenHelper {
 
 
     //Table one
@@ -55,7 +54,7 @@ public class RegisterContract extends SQLiteOpenHelper {
                     + " FOREIGN KEY (" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + " (" + USER_ID + "));";
 
 
-    public RegisterContract(Context context) {
+    public TransactionContract(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -69,7 +68,7 @@ public class RegisterContract extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(RegisterContract.class.getName(),
+        Log.w(TransactionContract.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
