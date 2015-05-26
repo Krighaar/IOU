@@ -35,18 +35,6 @@
 
         <!--android:value="AIzaSyBH8OFDGga_MACWp_wJEjcCG7dsDi1a8xk"-->
 
-        <activity
-            android:name=".newIOU"
-            android:label="@string/title_activity_new_iou" >
-        </activity>
-        <activity
-            android:name=".SeeUser"
-            android:label="@string/title_activity_see_user" >
-        </activity>
-        <activity
-            android:name=".Details"
-            android:label="@string/title_activity_details" >
-        </activity>
     </application>
 
 </manifest>

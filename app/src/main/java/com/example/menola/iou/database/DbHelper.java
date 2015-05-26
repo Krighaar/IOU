@@ -1,4 +1,4 @@
-package com.example.menola.iou;
+package com.example.menola.iou.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,7 +8,7 @@ import android.util.Log;
 /**
  * Created by Peter on 28-04-2015.
  */
-public class TransactionContract extends SQLiteOpenHelper {
+public class DbHelper extends SQLiteOpenHelper {
 
 
     //Table one
@@ -54,7 +54,7 @@ public class TransactionContract extends SQLiteOpenHelper {
                     + " FOREIGN KEY (" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + " (" + USER_ID + "));";
 
 
-    public TransactionContract(Context context) {
+    public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -68,7 +68,7 @@ public class TransactionContract extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(TransactionContract.class.getName(),
+        Log.w(DbHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);

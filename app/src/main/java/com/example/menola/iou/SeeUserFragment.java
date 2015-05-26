@@ -3,14 +3,13 @@ package com.example.menola.iou;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.menola.iou.database.Facade;
+import com.example.menola.iou.database.TransactionDataLayer;
 import com.example.menola.iou.model.Register;
 import com.example.menola.iou.model.User;
 
@@ -28,13 +29,15 @@ import java.util.List;
 
 public class SeeUserFragment extends Fragment {
 
-    private RegisterDataSource datasource;
+    private TransactionDataLayer datasource;
     private int userID;
     private TextView userIDTextView, userNameTV;
     private ListView listView;
     private User user;
     private ArrayAdapter<Register> regAdapter;
     private List<Register> reg;
+    private Facade facade;
+    private MenuItem m;
 
     public static SeeUserFragment newInstance() {
         SeeUserFragment fragment = new SeeUserFragment();
@@ -49,44 +52,18 @@ public class SeeUserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-        if (v.getId() == R.id.listOverview) {
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-            menu.setHeaderTitle(regAdapter.getItem(info.position).getDescription());
-            menu.setHeaderIcon(R.drawable.abc_list_pressed_holo_light);
-            menu.add(0, (int) regAdapter.getItem(info.position).getId(), 0, "Delete");
-            menu.add(0, (int) regAdapter.getItem(info.position).getId(), 0, "Paid");
-
+        setHasOptionsMenu(true);
+        if (getArguments() != null) {
+            userID = getArguments().getInt("userID", -1);
 
         }
+        facade = Facade.getInstance(this.getActivity());
 
+        reg = facade.getAllRegFromUser(userID);
+        user = facade.findUserByID(userID);
 
-        super.onCreateContextMenu(menu, v, menuInfo);
     }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle() == "Paid") {
-            datasource.open();
-            datasource.deleteComment(datasource.getTransaction((long) item.getItemId()));
-            Toast.makeText(getActivity(), item.getTitle() + " has been paid", Toast.LENGTH_SHORT).show();
-            datasource.close();
-        } else {
-            datasource.open();
-            datasource.deleteComment(datasource.getTransaction((long) item.getItemId()));
-            Toast.makeText(getActivity(),"It has been  deleted", Toast.LENGTH_SHORT).show();
-            datasource.close();
-        }
-
-
-        return super.onContextItemSelected(item);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,21 +71,6 @@ public class SeeUserFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_see_user, container, false);
         // Inflate the layout for this fragment
         init(rootView);
-
-        //Getting info from main listview
-
-        Bundle args = this.getArguments();
-        userID = args.getInt("userID", -1);
-
-
-        //Getting the connection to DB
-        datasource = RegisterDataSource.getInstance(this.getActivity());
-        datasource.open();
-
-
-        //Getting info from DB
-        reg = datasource.getAllRegFromUser(userID);
-        user = datasource.getUser(userID);
 
 
         regAdapter = new ArrayAdapter<Register>(this.getActivity(), android.R.layout.simple_list_item_1, reg) {
@@ -151,30 +113,48 @@ public class SeeUserFragment extends Fragment {
 
                 //   DetailFragment detailFragment = DetailFragment.newInstance(id);
 
-                replaceFragment(DetailFragment.newInstance(id), null);
+                replaceFragment(DetailFragment.newInstance(id));
 
 
             }
         });
 
-
-      /*  listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-
-            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                                           int pos, long id) {
-                // TODO Auto-generated method stub
-                Toast.makeText(getActivity(), "LONG PRESSED: " + pos, Toast.LENGTH_LONG).show();
-
-                Log.v("long clicked", "pos: " + pos);
-
-                return true;
-            }
-        });*/
-
-
         return rootView;
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        if (v.getId() == R.id.listOverview) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            menu.setHeaderTitle(regAdapter.getItem(info.position).getDescription());
+            menu.setHeaderIcon(R.drawable.abc_list_pressed_holo_light);
+            menu.add(0, (int) regAdapter.getItem(info.position).getId(), 0, "Delete");
+            menu.add(0, (int) regAdapter.getItem(info.position).getId(), 0, "Paid");
+
+
+        }
+
+
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle() == "Paid") {
+            facade.deleteTransaction(facade.getTransaction((long) item.getItemId()));
+            Toast.makeText(getActivity(), item.getTitle() + " has been paid", Toast.LENGTH_SHORT).show();
+            replaceFragment(MainFragment.newInstance());
+
+        } else {
+            facade.deleteTransaction(facade.getTransaction((long) item.getItemId()));
+            Toast.makeText(getActivity(), "It has been  deleted", Toast.LENGTH_SHORT).show();
+            replaceFragment(MainFragment.newInstance());
+        }
+
+
+        return super.onContextItemSelected(item);
+    }
 
     private void init(View view) {
         userIDTextView = (TextView) view.findViewById(R.id.userID);
@@ -183,26 +163,66 @@ public class SeeUserFragment extends Fragment {
 
     }
 
-    private void replaceFragment(Fragment newfragment, Bundle args) {
+    private void replaceFragment(Fragment newfragment) {
         // Create the image rotator fragment and pass in arguments
         FragmentManager fragmentManager = getFragmentManager();
 
-        if (args != null) {
-            newfragment.setArguments(args);
-
-        }
         // Add the new fragment on top of this one, and add it to
         // the back stack
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_wrapper, newfragment, newfragment.getClass().getName());
 //        fragmentTransaction.replace(R.id.fragment_wrapper, new SeeUserFragment());
 
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         fragmentTransaction.addToBackStack("detail");
 
         fragmentTransaction.commit();
 
 
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        m = menu.add("New IOU");
+        m.setShowAsAction(50);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+
+        if (item.getTitle() == "New IOU") {
+            Toast.makeText(getActivity(), "new " + userID, Toast.LENGTH_SHORT).show();
+
+            replaceFragment(NewIOUWithOutContactList.newInstance(userID));
+        } else {
+            Toast.makeText(getActivity(), "Setting", Toast.LENGTH_SHORT).show();
+        }
+
+      /*  String id = item.getTitle();
+        switch (id) {
+
+
+            case R.id.topmenu_map:
+                Toast.makeText(getActivity(), "starting map", Toast.LENGTH_SHORT).show();
+                //Do something else
+                break;
+            case R.id.:
+
+                Toast.makeText(getActivity(), "Setting", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }*/
+        return true;
+    }
+
 
 }

@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.menola.iou.database.Facade;
 import com.example.menola.iou.model.User;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,20 +33,33 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
     public static View rootView;
     private GoogleMap map;
     private EditText name, description, value;
-    private RegisterDataSource dataSource;
     private LatLng pos;
     private Marker marker;
     private MainActivity ma;
     private CheckBox posChkBox;
+    private Facade facade;
+    private int userID;
 
-
-    public static NewIOUWithOutContactList newInstance() {
+    public static NewIOUWithOutContactList newInstance(int userid) {
         NewIOUWithOutContactList fragment = new NewIOUWithOutContactList();
-
+        Bundle args = new Bundle();
+        args.putInt("userID", userid);
+        fragment.setArguments(args);
         return fragment;
     }
 
     public NewIOUWithOutContactList() {
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            userID = getArguments().getInt("userID",-1);
+        }
+
+
 
     }
 
@@ -64,11 +78,13 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
         /* map is already there, just return view as it is */
         }
 
-        ma = (MainActivity) getActivity();
+
+        facade = Facade.getInstance(getActivity());
         init(rootView);
 
-        dataSource = RegisterDataSource.getInstance(getActivity());
-
+        if(userID!=-1){
+            name.setText(facade.findUserByID(userID).getName());
+        }
         // When extended supportMapFragment the following line wont work!
         map = ((com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.mapV)).getMap();
 /*
@@ -109,21 +125,20 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
         switch (v.getId()) {
             case R.id.addbtn:
                 //String namestr = name.getText().toString();
-                //dataSource = RegisterDataSource.getInstance(this.getActivity());
-                dataSource.open();
+                //dataSource = TransactionDataLayer.getInstance(this.getActivity());
                 if (!posChkBox.isChecked()) {
-                    pos = new LatLng(00.00,00.00);
+                    pos = new LatLng(00.00, 00.00);
                 }
 
-                if (dataSource.findUser(name.getText().toString()) != null) {
-                    User user = dataSource.findUser(name.getText().toString());
-                    dataSource.createComment(user.getId(), description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
+                if (facade.getUser(name.getText().toString()) != null) {
+                    User user = facade.getUser(name.getText().toString());
+                    facade.createTransaction(user.getId(), description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
 
                 } else {
-                    dataSource.createUser(name.getText().toString());
+                    facade.createUser(name.getText().toString());
 
                     Toast.makeText(getActivity(), "pos: " + pos, Toast.LENGTH_SHORT).show();
-                    dataSource.createComment(dataSource.findUser(name.getText().toString()).getId(), description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
+                    facade.createTransaction(facade.getUser(name.getText().toString()).getId(), description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
 
                 }
 
@@ -133,7 +148,6 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
                 vib.vibrate(500);
 
                 marker.remove();
-                dataSource.close();
 
                 backToMain();
 

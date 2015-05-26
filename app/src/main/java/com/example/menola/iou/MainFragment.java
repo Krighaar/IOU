@@ -3,7 +3,6 @@ package com.example.menola.iou;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -16,8 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.menola.iou.controller.Controller;
-import com.example.menola.iou.model.Register;
+import com.example.menola.iou.database.Facade;
+import com.example.menola.iou.database.TransactionDataLayer;
 import com.example.menola.iou.model.User;
 
 import java.util.List;
@@ -25,13 +24,13 @@ import java.util.List;
 
 public class MainFragment extends Fragment implements View.OnClickListener {
 
-    private RegisterDataSource datasource;
+    private TransactionDataLayer datasource;
     private ListView listView;
     private ArrayAdapter<User> adapter;
     private MainActivity ma;
     private List<User> values;
     private TextView totalOwe;
-    private Controller controller;
+    private Facade facade;
 
     //  private OnFragmentInteractionListener mListener;
 
@@ -56,7 +55,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ma = (MainActivity) getActivity();
-        controller = Controller.getInstance(ma);
+        facade = Facade.getInstance(ma);
         init(rootView);
 
 
@@ -73,13 +72,13 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     private void init(View rootView) {
 
 
-        List<Register> reg = controller.getAllComments();
-        values = controller.getAllUsers();
+
+        values = facade.getAllUsers();
 
         totalOwe = (TextView) rootView.findViewById(R.id.totalOwe);
 
 
-        totalOwe.setText(controller.getTotalFromAll());
+        totalOwe.setText(facade.getTotalFromAll());
 
         listView = (ListView) rootView.findViewById(R.id.list);
 
@@ -119,12 +118,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 int id = adapter.getItem(i).getId();
                 Toast.makeText(getActivity(), "id cliked is: " + id, Toast.LENGTH_SHORT).show();
 
-               /* Intent intent = new Intent(getActivity(), SeeUser.class);
-                intent.putExtra("id", id);
-                startActivity(intent);*/
-
                 FragmentManager fragmentManager = getFragmentManager();
-
                 SeeUserFragment seeUserFragment = SeeUserFragment.newInstance();
 
                 Bundle args = new Bundle();
@@ -134,15 +128,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 replaceFragment(seeUserFragment, null);
 
 
-               /* FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_wrapper, seeUserFragment, SeeUserFragment.class.getName());
-                fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-                fragmentTransaction.addToBackStack(null);
-
-
-                fragmentTransaction.commit();*/
-
-                //ma.pushFragment(SeeUserFragment.newInstance(),false);
             }
         });
 
@@ -160,30 +145,14 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.newAccount:
-                Intent i = new Intent(this.getActivity(), newIOU.class);
-                startActivity(i);
-                //ma.pushFragment(NewIOUFragment.newInstance(), false);
-                break;
-            case R.id.newAccountNoContactList:
+                replaceFragment(NewIOUWithOutContactList.newInstance(-1), null);
 
-                NewIOUWithOutContactList newIOUWithOutContactList = NewIOUWithOutContactList.newInstance();
-
-                replaceFragment(newIOUWithOutContactList,null);
-
-                break;
-
-
-           /* case R.id.list:
-                int index = listView.getSelectedItemPosition();
-                User user = values.get(index);
-                Toast.makeText(getActivity(), "List cliked: " + user.toString(), Toast.LENGTH_LONG).show();
-                break;*/
         }
     }
 
     private float getTotal(int id) {
 
-        return controller.getTotalFromUser(id);
+        return facade.getTotalFromUser(id);
 
     }
 
