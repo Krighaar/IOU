@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -177,6 +178,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         paid = menu.add("PAID");
         del = menu.add("Delete");
+        paid.setIcon(R.drawable.check);
+        del.setIcon(R.drawable.cancel);
         paid.setShowAsAction(50);
         del.setShowAsAction(50);
 
@@ -187,9 +190,12 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getTitle() == "PAID") {
             deleteTransaction();
+            Toast.makeText(getActivity(),"The Debt has been paid",Toast.LENGTH_SHORT).show();
         }
         if (item.getTitle() == "Delete") {
             deleteTransaction();
+            Toast.makeText(getActivity(),"The Debt has been deleted",Toast.LENGTH_SHORT).show();
+
         }
 
 
@@ -203,10 +209,10 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
 
     private void replaceFragment(Fragment newfragment) {
 
+
         FragmentManager fragmentManager = getFragmentManager();
 
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
         fragmentTransaction.replace(R.id.fragment_wrapper, newfragment, newfragment.getClass().getName());
 
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);

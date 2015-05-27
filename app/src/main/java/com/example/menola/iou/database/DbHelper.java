@@ -29,7 +29,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "IOU1.db";
     private static final String DATABASE_DROP = "drop table " + TABLE_REGISTER;
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     static public int getVersion() {
         return DATABASE_VERSION;

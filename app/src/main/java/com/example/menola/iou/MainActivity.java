@@ -15,9 +15,8 @@ import android.widget.Toast;
 import java.util.Stack;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends Activity {
 
-    private Stack<Fragment> stack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +24,22 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
 
-        stack = new Stack<Fragment>();
+        FragmentManager fragmentManager = getFragmentManager();
+        // Create the image rotator fragment and pass in arguments
+        MainFragment mainFragment = MainFragment.newInstance();
+
+        // Add the new fragment on top of this one, and add it to
+        // the back stackic_action_sms3
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_wrapper, mainFragment);
+
+        //fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+        /* stack = new Stack<Fragment>();
         if (savedInstanceState == null) {
             this.pushFragment(MainFragment.newInstance(), false);
-        }
+        }*/
     }
 
 
@@ -47,61 +58,23 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
         switch (id) {
 
+            case R.id.new_IOU:
+                FragmentManager fragmentManager = getFragmentManager();
+                // Create the image rotator fragment and pass in arguments
+                // Add the new fragment on top of this one, and add it to
+                // the back stackic_action_sms3
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_wrapper, NewIOUWithOutContactList.newInstance(-1));
+
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
 
         }
-
+        return true;
     }
-
-    public void pushFragment(Fragment fragment, boolean asRoot) {
-        stack.push(fragment);
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_wrapper, fragment);
-        ft.commit();
-        if (asRoot) {
-            Fragment f = stack.peek();
-            stack.clear();
-            stack.push(f);
-        }
-    }
-
-    public void popToRoot() {
-        Fragment initialFragment = MainFragment.newInstance();
-        Fragment currentFragment = stack.peek();
-        stack.clear();
-        stack.push(initialFragment);
-        stack.push(currentFragment);
-        popFragment();
-    }
-
-    public void popFragment() {
-        if (stack.size() > 1) {
-            stack.pop();
-            Fragment fragment = stack.peek();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment_wrapper, fragment);
-            ft.commit();
-        }
-    }
-
-
-    @Override
-    public void onClick(View v) {
-
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
-            this.finish();
-        } else {
-            getFragmentManager().popBackStack();
-        }
-    }
-    //test for menu
-
-
 
 }

@@ -85,18 +85,26 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
         if(userID!=-1){
             name.setText(facade.findUserByID(userID).getName());
         }
+        setupMap();
+
+
+        int[] clickButtons = new int[]{R.id.addbtn
+        };
+        for (int i : clickButtons) {
+            rootView.findViewById(i).setOnClickListener(this);
+        }
+
+
+        return rootView;
+    }
+
+    private void setupMap() {
         // When extended supportMapFragment the following line wont work!
         map = ((com.google.android.gms.maps.MapFragment) getFragmentManager().findFragmentById(R.id.mapV)).getMap();
-/*
-        UiSettings settings = SupportMapFragment.getMap().getUiSettings();
-        settings.setAllGesturesEnabled(false);
-        settings.setMyLocationButtonEnabled(false);*/
 
-        // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         String locationProvider = LocationManager.GPS_PROVIDER;
-
 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
 
@@ -108,15 +116,6 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
         marker = map.addMarker(new MarkerOptions().position(pos).title("You were here"));
         map.animateCamera(update);
 
-
-        int[] clickButtons = new int[]{R.id.addbtn, R.id.backbtn
-        };
-        for (int i : clickButtons) {
-            rootView.findViewById(i).setOnClickListener(this);
-        }
-
-
-        return rootView;
     }
 
     @Override
@@ -124,9 +123,7 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
 
         switch (v.getId()) {
             case R.id.addbtn:
-                //String namestr = name.getText().toString();
-                //dataSource = TransactionDataLayer.getInstance(this.getActivity());
-                if (!posChkBox.isChecked()) {
+              if (!posChkBox.isChecked()) {
                     pos = new LatLng(00.00, 00.00);
                 }
 
@@ -136,10 +133,7 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
 
                 } else {
                     facade.createUser(name.getText().toString());
-
-                    Toast.makeText(getActivity(), "pos: " + pos, Toast.LENGTH_SHORT).show();
                     facade.createTransaction(facade.getUser(name.getText().toString()).getId(), description.getText().toString(), Float.parseFloat(value.getText().toString()), new LatLng((pos.latitude), pos.longitude));
-
                 }
 
                 //tactical feedback to user
@@ -152,10 +146,7 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
                 backToMain();
 
                 break;
-            case R.id.backbtn:
-                //ma.pushFragment(MainFragment.newInstance(), false);
-                backToMain();
-                break;
+
             default:
                 backToMain();
                 break;
@@ -163,10 +154,7 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
     }
 
 
-    //@Override
-    protected boolean canGoBack() {
-        return false;
-    }
+
 
     private void init(View rootView) {
         name = (EditText) rootView.findViewById(R.id.nameText);
@@ -182,17 +170,18 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
         MainFragment mainFragment = MainFragment.newInstance();
 
         // Add the new fragment on top of this one, and add it to
-        // the back stack
+        // the back stackic_action_sms3
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_wrapper, mainFragment, MainFragment.class.getName());
         fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-        //fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         fragmentTransaction.addToBackStack(null);
 
 
         fragmentTransaction.commit();
 
     }
+
+
 
     @Override
     public void onResume() {

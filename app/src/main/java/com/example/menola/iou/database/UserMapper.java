@@ -29,5 +29,9 @@ public class UserMapper {
     public User findUser(String userName) {
         return dataSource.findUser(userName);
     }
+
+    public void deleteUser(int itemId) {
+        dataSource.deleteUser(itemId);
+    }
 }
 

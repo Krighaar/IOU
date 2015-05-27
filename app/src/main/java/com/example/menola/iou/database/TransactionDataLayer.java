@@ -305,6 +305,17 @@ public class TransactionDataLayer {
         close();
         return register;
     }
+
+    public void deleteUser(int itemId) {
+        open();
+
+        System.out.println("User deleted with id: " + itemId);
+
+
+        database.delete(DbHelper.TABLE_USERS, DbHelper.COLUMN_ID
+                + " = " + itemId, null);
+        close();
+    }
 }
 
 

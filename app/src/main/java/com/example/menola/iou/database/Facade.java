@@ -88,4 +88,8 @@ public class Facade {
     public void createUser(String userName) {
         dataSource.createUser(userName);
     }
+
+    public void deleteUser(int itemId) {
+        um.deleteUser(itemId);
+    }
 }

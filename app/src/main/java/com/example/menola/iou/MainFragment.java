@@ -6,11 +6,14 @@ import android.app.FragmentTransaction;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +63,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
 
         //setting up the eventlisteners
-        int[] clickButtons = new int[]{R.id.newAccount, R.id.newAccountNoContactList,};
+        int[] clickButtons = new int[]{R.id.newAccount};
         for (int i : clickButtons) {
             rootView.findViewById(i).setOnClickListener(this);
         }
@@ -70,7 +73,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     }
 
     private void init(View rootView) {
-
 
 
         values = facade.getAllUsers();
@@ -89,7 +91,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                 View view = super.getView(position, convertView, parent);
                 TextView text = (TextView) view.findViewById(android.R.id.text1);
 
-               // text.setText(values.get(position).getName() + " id: " + values.get(position).getId() + " amount: " + getTotal(values.get(position).getId()));
+                // text.setText(values.get(position).getName() + " id: " + values.get(position).getId() + " amount: " + getTotal(values.get(position).getId()));
                 text.setText(values.get(position).getName() + " amount: " + getTotal(values.get(position).getId()));
 
                 //   text.setText(values.get(position).getName() + " id: " + values.get(position).getId() + " amount: ");
@@ -108,7 +110,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
 
         listView.setAdapter(adapter);
-
+        registerForContextMenu(listView);
 
 
         //Setting up the listview on click
@@ -134,6 +136,34 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        if (v.getId() == R.id.list) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            menu.setHeaderTitle(adapter.getItem(info.position).getName());
+            menu.setHeaderIcon(R.drawable.abc_list_longpressed_holo);
+            menu.add(0, (int) adapter.getItem(info.position).getId(), 0, "Remove");
+
+
+        }
+
+
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle() == "Remove") {
+            adapter.remove(facade.findUserByID(item.getItemId()));
+            facade.deleteUser(item.getItemId());
+            Toast.makeText(getActivity(), "User has been deleted", Toast.LENGTH_SHORT).show();
+            adapter.notifyDataSetChanged();
+        }
+
+
+        return super.onContextItemSelected(item);
+    }
 
 
     protected boolean canGoBack() {
@@ -156,31 +186,27 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void replaceFragment(Fragment newfragment, Bundle args){
+    private void replaceFragment(Fragment newfragment, Bundle args) {
 
         // Create the image rotator fragment and pass in arguments
         FragmentManager fragmentManager = getFragmentManager();
 
-            if(args != null){
-                newfragment.setArguments(args);
+        if (args != null) {
+            newfragment.setArguments(args);
 
-            }
+        }
 
         // Add the new fragment on top of this one, and add it to
         // the back stack
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_wrapper, newfragment, newfragment.getClass().getName());
-//        fragmentTransaction.replace(R.id.fragment_wrapper, new SeeUserFragment());
 
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragmentTransaction.addToBackStack("tag");
+        fragmentTransaction.addToBackStack(null);
 
         fragmentTransaction.commit();
 
 
     }
-
-
 
 
 }

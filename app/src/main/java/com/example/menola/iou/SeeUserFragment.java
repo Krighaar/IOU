@@ -167,13 +167,13 @@ public class SeeUserFragment extends Fragment {
         // Create the image rotator fragment and pass in arguments
         FragmentManager fragmentManager = getFragmentManager();
 
+
         // Add the new fragment on top of this one, and add it to
         // the back stack
+
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragment_wrapper, newfragment, newfragment.getClass().getName());
-//        fragmentTransaction.replace(R.id.fragment_wrapper, new SeeUserFragment());
 
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
         fragmentTransaction.addToBackStack("detail");
 
         fragmentTransaction.commit();
@@ -185,6 +185,7 @@ public class SeeUserFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         m = menu.add("New IOU");
+        m.setIcon(R.drawable.add);
         m.setShowAsAction(50);
 
         super.onCreateOptionsMenu(menu, inflater);

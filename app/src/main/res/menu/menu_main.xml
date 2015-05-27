@@ -1,5 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context="com.example.menola.iou.MainActivity">
+    <item
+        android:id="@+id/new_IOU"
+        app:showAsAction="always"
+        android:title="New IOU"
+        android:icon="@drawable/add">
+    </item>
+    <item
+        android:id="@+id/PaidMenuItem"
+        app:showAsAction="always"
+        android:icon="@drawable/check"
+        android:title="Paid">
+    </item>
+    <item
+        android:id="@+id/DeleteMenuITem"
+        android:icon="@drawable/cancel"
+        app:showAsAction="always"
+        android:title="Delete">
+    </item>
 </menu>
