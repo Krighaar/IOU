@@ -8,12 +8,16 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.renderscript.Sampler;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import com.example.menola.iou.database.Facade;
 import com.example.menola.iou.model.User;
@@ -38,6 +42,8 @@ public class NewIOU extends Fragment implements View.OnClickListener {
     private CheckBox posChkBox;
     private Facade facade;
     private int userID;
+    private Switch iouSwitch;
+    private boolean iowe = false;
 
     public static NewIOU newInstance(int userid) {
         NewIOU fragment = new NewIOU();
@@ -125,6 +131,10 @@ public class NewIOU extends Fragment implements View.OnClickListener {
               if (!posChkBox.isChecked()) {
                     pos = new LatLng(00.00, 00.00);
                 }
+                if(iowe){
+                   // float res = (-1*Float.parseFloat(value.getText().toString()));
+                    value.setText(Float.toString((-1 * Float.parseFloat(value.getText().toString()))));
+                }
 
                 if (facade.getUser(name.getText().toString()) != null) {
                     User user = facade.getUser(name.getText().toString());
@@ -160,6 +170,19 @@ public class NewIOU extends Fragment implements View.OnClickListener {
         description = (EditText) rootView.findViewById(R.id.description);
         value = (EditText) rootView.findViewById(R.id.amount);
         posChkBox = (CheckBox) rootView.findViewById(R.id.posCheckbox);
+        iouSwitch = (Switch) rootView.findViewById(R.id.iouSwitch);
+
+        iouSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b){
+                   iowe = true;
+                }
+                else{
+                    iowe = false;
+                }
+            }
+        });
     }
 
     private void backToMain() {

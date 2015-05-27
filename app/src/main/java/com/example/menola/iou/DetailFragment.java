@@ -30,6 +30,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.PriorityQueue;
+
 
 public class DetailFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
@@ -38,11 +40,13 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename and change types of parameters
     private Long regID;
     private String mParam2;
-    private TextView name, description, value;
+    private TextView name, description, value, ioweLabel;
     private LatLng pos;
     private User user;
     private Facade facade;
     private MenuItem paid, del;
+    private final String IOWE = "I OWE";
+    private  final String OWESME = "OWES ME";
 
     private Register register;
 
@@ -92,6 +96,12 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         description.setText(register.getDescription());
         value.setText(Float.toString(register.getValue()));
 
+        if (register.getValue() > 0) {
+            ioweLabel.setText(OWESME);
+        } else {
+            ioweLabel.setText(IOWE);
+        }
+
         //setting up the eventlisteners
         int[] clickButtons = new int[]{R.id.paidBtn, R.id.deleteBtn, R.id.sendSMS, R.id.sendMail};
         for (int i : clickButtons) {
@@ -137,6 +147,8 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
         name = (TextView) view.findViewById(R.id.nameText);
         description = (TextView) view.findViewById(R.id.descriptionText);
         value = (TextView) view.findViewById(R.id.value);
+        ioweLabel = (TextView) view.findViewById(R.id.ioweLabel);
+
 
     }
 
@@ -190,11 +202,11 @@ public class DetailFragment extends Fragment implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getTitle() == "PAID") {
             deleteTransaction();
-            Toast.makeText(getActivity(),"The Debt has been paid",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "The Debt has been paid", Toast.LENGTH_SHORT).show();
         }
         if (item.getTitle() == "Delete") {
             deleteTransaction();
-            Toast.makeText(getActivity(),"The Debt has been deleted",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "The Debt has been deleted", Toast.LENGTH_SHORT).show();
 
         }
 

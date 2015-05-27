@@ -13,10 +13,19 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/ioweLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="IOU GOES HERE"
+            android:textSize="20sp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
 
             <TextView
                 android:id="@+id/nameLabel"
@@ -82,15 +91,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <com.google.android.gms.maps.MapView
                 android:id="@+id/mapWrapper"
                 android:layout_width="200dp"
                 android:layout_height="150dp"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal">
 
 
             </com.google.android.gms.maps.MapView>
@@ -160,7 +169,7 @@
                 android:id="@+id/deleteBtn"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/cancel"/>
+                android:background="@drawable/cancel" />
 
             <TextView
                 android:id="@+id/spacecreeator"
