@@ -201,7 +201,7 @@ public class SeeUserFragment extends Fragment {
         if (item.getTitle() == "New IOU") {
             Toast.makeText(getActivity(), "new " + userID, Toast.LENGTH_SHORT).show();
 
-            replaceFragment(NewIOUWithOutContactList.newInstance(userID));
+            replaceFragment(NewIOU.newInstance(userID));
         } else {
             Toast.makeText(getActivity(), "Setting", Toast.LENGTH_SHORT).show();
         }

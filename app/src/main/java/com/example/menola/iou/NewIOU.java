@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.menola.iou.database.Facade;
 import com.example.menola.iou.model.User;
@@ -28,7 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by Peter on 28-04-2015.
  */
-public class NewIOUWithOutContactList extends Fragment implements View.OnClickListener {
+public class NewIOU extends Fragment implements View.OnClickListener {
 
     public static View rootView;
     private GoogleMap map;
@@ -40,15 +39,15 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
     private Facade facade;
     private int userID;
 
-    public static NewIOUWithOutContactList newInstance(int userid) {
-        NewIOUWithOutContactList fragment = new NewIOUWithOutContactList();
+    public static NewIOU newInstance(int userid) {
+        NewIOU fragment = new NewIOU();
         Bundle args = new Bundle();
         args.putInt("userID", userid);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public NewIOUWithOutContactList() {
+    public NewIOU() {
 
     }
 
@@ -72,7 +71,7 @@ public class NewIOUWithOutContactList extends Fragment implements View.OnClickLi
             }
         }
         try {
-            rootView = inflater.inflate(R.layout.fragment_new_iouwith_out_contact_list, container, false);
+            rootView = inflater.inflate(R.layout.fragment_new_iou, container, false);
 
         } catch (InflateException e) {
         /* map is already there, just return view as it is */

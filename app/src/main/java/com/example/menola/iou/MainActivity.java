@@ -1,18 +1,11 @@
 package com.example.menola.iou;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
-import java.util.Stack;
 
 
 public class MainActivity extends Activity {
@@ -64,7 +57,7 @@ public class MainActivity extends Activity {
                 // Add the new fragment on top of this one, and add it to
                 // the back stackic_action_sms3
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_wrapper, NewIOUWithOutContactList.newInstance(-1));
+                fragmentTransaction.replace(R.id.fragment_wrapper, NewIOU.newInstance(-1));
 
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();

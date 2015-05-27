@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -175,7 +174,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
         switch (v.getId()) {
             case R.id.newAccount:
-                replaceFragment(NewIOUWithOutContactList.newInstance(-1), null);
+                replaceFragment(NewIOU.newInstance(-1), null);
 
         }
     }

@@ -1,1 +1,1 @@
-include ':app', ':AndroidSwipeLayout-v1.1.8'
+include ':app'
